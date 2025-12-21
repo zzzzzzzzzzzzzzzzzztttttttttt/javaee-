@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.javaeeforll.mapper.GoodsMapper">
+    <resultMap id="BaseResultMap" type="org.example.javaeeforll.entity.Goods">
+        <id column="goods_id" jdbcType="INTEGER" property="goodsId" />
+        <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+        <result column="category_id" jdbcType="INTEGER" property="categoryId" />
+        <result column="price" jdbcType="DECIMAL" property="price" />
+        <result column="stock" jdbcType="INTEGER" property="stock" />
+        <result column="goods_desc" jdbcType="VARCHAR" property="goodsDesc" />
+        <result column="goods_img" jdbcType="VARCHAR" property="goodsImg" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+    <select id="selectByCategoryId" resultMap="BaseResultMap">
+        select * from t_goods where category_id=#{categoryId}
+    </select>
+<!--    private Integer goodsId;-->
+<!--    private String goodsName;-->
+<!--    private Integer categoryId;-->
+<!--    private BigDecimal price;-->
+<!--    private Integer stock;-->
+<!--    private String goodsDesc;-->
+<!--    private String goodsImg;-->
+<!--    private Date createTime;-->
+    <select id="selectById" resultType="org.example.javaeeforll.entity.Goods">
+        select * from t_goods where goods_id=#{goodsId}
+    </select>
+
+    <insert id="insertGoods">
+        insert into t_goods(goods_name,category_id,price,stock,goods_desc,goods_img,create_time)
+        values(#{goodsName},#{categoryId},#{price},#{stock},#{goodsDesc},#{goodsImg},#{createTime})
+    </insert>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select * from t_goods order by create_time desc
+    </select>
+</mapper>

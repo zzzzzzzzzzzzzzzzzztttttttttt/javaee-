@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mapper.BuyMapper">
+<resultMap id="bbb" type="org.example.pojo.buy">
+    <id property="bookName" column="bk_name"/>
+    <result property="number" column="nums"/>
+</resultMap>
+    <select id="b" resultMap="bbb">
+        select  bk_name,nums from orders ,bookstore AS book where c_id=#{id} and b_id=book.id
+    </select>
+</mapper>

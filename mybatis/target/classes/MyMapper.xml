@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.example.Mappers.MyMapper">
+    <resultMap id="studentMap" type="org.example.pojo.Book">
+        <id property="id" column="id" />
+        <result property="name" column="bk_name" />
+        <result property="author" column="bk_author" />
+        <result property="press" column="press" />
+        <result property="amount" column="amount" />
+    </resultMap>
+    <select id="find" parameterType="int" resultMap="studentMap">
+        select * from bookstore where id=#{id}
+    </select>
+
+    <insert id="add" parameterType="org.example.pojo.Book" >
+        <selectKey keyProperty="id" resultType="int" order="BEFORE" >
+            select if(max(id) is null,1,max(id)+1) as newId from bookstore
+        </selectKey>
+        insert into bookstore (id, bk_name, bk_author, press, amount)
+        values (#{id}, #{name}, #{author}, #{press}, #{amount})
+    </insert>
+
+    <update id="update" parameterType="org.example.pojo.Book" >
+        update bookstore set bk_name=#{name},bk_author=#{author},press=#{press},amount=#{amount} where id=#{id}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM bookstore WHERE id = #{id}
+    </delete>
+</mapper>

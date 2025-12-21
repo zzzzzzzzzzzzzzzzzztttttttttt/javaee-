@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.javaee.mapper.ProductMapper">
+    <resultMap id="ProductResultMap" type="org.example.javaee.entity.Product">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="price" property="price"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="img" property="img"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="ProductResultMap">
+        SELECT * FROM product WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="ProductResultMap">
+        SELECT * FROM product
+    </select>
+
+    <!-- 根据分类ID查询商品 -->
+    <select id="selectByCategoryId" resultMap="ProductResultMap">
+        SELECT * FROM product WHERE category_id = #{categoryId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO product (name, price, category_id, img)
+        VALUES (#{name}, #{price}, #{categoryId}, #{img})
+    </insert>
+
+    <update id="update">
+        UPDATE product
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="img != null and img != ''">img = #{img},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM product WHERE id = #{id}
+    </delete>
+</mapper>

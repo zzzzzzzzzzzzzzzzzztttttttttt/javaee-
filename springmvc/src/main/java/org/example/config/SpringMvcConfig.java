@@ -1,0 +1,19 @@
+package org.example.config;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+@Configuration
+@ComponentScan("org.example.controller")
+@EnableWebMvc
+public class SpringMvcConfig {
+    @Bean
+    public InternalResourceViewResolver viewResolver() {
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setPrefix("/WEB-INF/"); // 页面所在目录
+        resolver.setSuffix(".jsp"); // 页面后缀
+        return resolver;
+    }
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.javaee.mapper.CartMapper">
+    <resultMap id="Cart" type="org.example.javaee.entity.Cart">
+        <id column="id" property="id"/>
+        <result column="u_id" property="userId"/>
+        <result column="c_id" property="productId"/>
+        <result column="nums" property="nums"/>
+    </resultMap>
+    <resultMap id="CartUser" type="org.example.javaee.entity.UserCart">
+        <id column="id" property="id"/>
+        <result column="u_id" property="userId"/>
+        <result column="p_id" property="productId"/>
+        <result column="username" property="userName"/>
+        <result column="name" property="productName"/>
+        <result column="img" property="productImage"/>
+        <result column="nums" property="nums"/>
+    </resultMap>
+    <insert id="addCart">
+        INSERT INTO cart (u_id, p_id, nums)
+        -- SELECT 子句：查询用户ID + 固定商品ID + 数量1
+        SELECT
+            u.id AS u_id,          -- 从user表查用户名对应的ID（作为购物车的u_id）
+            #{productId} AS p_id,  -- 前端传入的商品ID（固定值）
+            1 AS nums               -- 数量固定为1
+        FROM
+            user u
+        WHERE
+            u.username = #{username}
+    </insert>
+    <update id="updateCart">
+        UPDATE cart
+        SET
+            nums = #{nums}
+        WHERE
+            id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM cart WHERE id = #{id}
+    </delete>
+    <select id="findById" resultType="org.example.javaee.entity.UserCart">
+       select c.id as id, u_id as id,u.username as userName,p.name as productName,p.img as productImage,p. id as productId ,c.nums as nums,p.price as productPrice
+       from  product p,user u ,cart c
+        where  c.u_id=#{id} and c.p_id=p.id and c.u_id=u.id
+    </select>
+</mapper>

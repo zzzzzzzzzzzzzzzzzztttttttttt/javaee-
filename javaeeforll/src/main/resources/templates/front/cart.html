@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的购物车</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        .btn-update { padding: 5px 10px; background: #4CAF50; color: white; border: none; }
+        .btn-delete { padding: 5px 10px; background: #f44336; color: white; border: none; }
+    </style>
+</head>
+<body>
+<h2>我的购物车</h2>
+<table>
+    <tr>
+        <th>商品名称</th>
+        <th>单价</th>
+        <th>数量</th>
+        <th>操作</th>
+    </tr>
+    <tr th:each="cart : ${cartList}">
+        <td th:text="${goodsService.getGoodsById(cart.goodsId).goodsName}"></td>
+        <td th:text="${goodsService.getGoodsById(cart.goodsId).price}"></td>
+        <td>
+            <button onclick="updateNum(${cart.cartId}, -1)">-</button>
+            <span th:text="${cart.num}"></span>
+            <button onclick="updateNum(${cart.cartId}, 1)">+</button>
+        </td>
+        <td>
+            <button class="btn-delete" onclick="deleteCart(${cart.cartId})">删除</button>
+        </td>
+    </tr>
+</table>
+
+<script>
+    // 更新数量
+    function updateNum(cartId, step) {
+        fetch(`/cart/update?cartId=${cartId}&num=${step}`, { method: 'PUT' })
+            .then(res => res.text())
+            .then(data => data === 'success' && window.location.reload());
+    }
+
+    // 删除商品
+    function deleteCart(cartId) {
+        if (confirm('确定删除吗？')) {
+            fetch(`/cart/delete/${cartId}`, { method: 'DELETE' })
+                .then(res => res.text())
+                .then(data => data === 'success' && window.location.reload());
+        }
+    }
+</script>
+</body>
+</html>

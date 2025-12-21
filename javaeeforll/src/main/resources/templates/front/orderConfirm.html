@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>确认订单</title>
+    <style>
+        .address-form { margin: 20px 0; padding: 20px; border: 1px solid #eee; }
+        .form-group { margin: 10px 0; }
+        input { padding: 8px; width: 300px; }
+        .btn-submit { padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+<h2>确认订单</h2>
+
+<!-- 收货信息 -->
+<div class="address-form">
+    <h3>收货信息</h3>
+    <form id="orderForm">
+        <div class="form-group">
+            <input type="text" name="receiver" placeholder="收货人" required>
+        </div>
+        <div class="form-group">
+            <input type="text" name="phone" placeholder="手机号" required>
+        </div>
+        <div class="form-group">
+            <input type="text" name="address" placeholder="详细地址" required>
+        </div>
+        <input type="hidden" name="userId" value="1"> <!-- 实际从会话获取 -->
+        <input type="hidden" name="totalPrice" value="99.9"> <!-- 实际从购物车计算 -->
+        <button type="button" class="btn-submit" onclick="submitOrder()">提交订单</button>
+    </form>
+</div>
+
+<script>
+    function submitOrder() {
+        const form = document.getElementById('orderForm');
+        const formData = new FormData(form);
+        const order = Object.fromEntries(formData.entries());
+
+        fetch('/order/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(order)
+        }).then(res => res.text())
+            .then(data => {
+                if (data !== 'fail') {
+                    alert('订单提交成功！订单号：' + data);
+                    window.location.href = '/order/detail/' + data;
+                } else {
+                    alert('提交失败');
+                }
+            });
+    }
+</script>
+</body>
+</html>

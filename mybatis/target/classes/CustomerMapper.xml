@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.Mappers.CustomerMapper">
+
+
+    <resultMap id="Find1" type="org.example.pojo.Customer">
+        <id property="id" column="id" />
+        <result property="name" column="username" />
+        <result property="jobs" column="jobs" />
+        <result property="phone" column="phone" />
+        <collection property="buy" ofType="org.example.pojo.buy"  column="id"
+                    select="org.example.Mappers.BuyMapper.b"/>
+
+    </resultMap>
+    <select id="findCustomerOrders1" parameterType="integer" resultMap="Find1">
+            select *from  customer where id=#{id}
+    </select>
+
+
+
+
+    <resultMap id="Find2" type="org.example.pojo.Customer">
+        <id property="id" column="id" />
+        <result property="name" column="username" />
+        <result property="jobs" column="jobs" />
+        <result property="phone" column="phone" />
+        <collection property="buy" ofType="org.example.pojo.buy" >
+                    <id property="bookName" column="book_name"/>
+                    <result property="number" column="book_number"/>
+
+        </collection>
+    </resultMap>
+    <select id="findCustomerOrders2" resultType="org.example.pojo.Customer" resultMap="Find2">
+        select customer.*,bookstore.bk_name as book_name,orders.nums as book_number,orders.id as order_id
+        from bookstore,customer,orders
+        where bookstore.id=orders.b_id and customer.id=orders.c_id and customer.id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hqyj.mapper.EmployerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.hqyj.pojo.Employer">
+        <id column="emp_id" property="empId" />
+        <result column="emp_name" property="empName" />
+        <result column="emp_sex" property="empSex" />
+        <result column="emp_age" property="empAge" />
+        <result column="emp_department" property="empDepartment" />
+        <result column="emp_job" property="empJob" />
+    </resultMap>
+<resultMap id="resultEmp" type="com.hqyj.pojo.EmployerAge">
+    <id column="name" property="name" />
+    <result column="value" property="value" />
+</resultMap>
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        emp_id, emp_name, emp_sex, emp_age, emp_department, emp_job
+    </sql>
+    <select id="queryAge" resultMap="resultEmp">
+        SELECT
+            '20-29岁' AS 'name',
+                COUNT(CASE WHEN emp_age BETWEEN 20 AND 29 THEN 1 END) AS 'value'
+        FROM employer
+        WHERE delete_tag = 0
+
+        UNION ALL
+
+        SELECT
+            '30-39岁' AS 'name',
+                COUNT(CASE WHEN emp_age BETWEEN 30 AND 39 THEN 1 END) AS 'value'
+        FROM employer
+        WHERE delete_tag = 0
+
+        UNION ALL
+
+        SELECt
+            '50-60岁' AS 'name',
+                COUNT(CASE WHEN emp_age BETWEEN 50 AND 60 THEN 1 END) AS 'value'
+        FROM employer
+        WHERE delete_tag = 0
+
+        ORDER BY
+            CASE 'name'
+                WHEN '20-29岁' THEN 1
+                WHEN '30-39岁' THEN 2
+                WHEN '50-60岁' THEN 3
+                END;
+    </select>
+    <select id="findByEmployeeName" resultType="com.hqyj.pojo.Employer">
+        SELECT * FROM employer WHERE emp_name LIKE concat('%',#{empName},'%')
+    </select>
+
+</mapper>

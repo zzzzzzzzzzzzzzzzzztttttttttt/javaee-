@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="e1" class="org.example.Employee">
+        <property name="name" value="AAAA"/>
+        <property name="workNumber" value="001"/>
+    </bean>
+
+    <bean id="e2" class="org.example.Employee">
+        <property name="name" value="BBBB"/>
+        <property name="workNumber" value="002"/>
+    </bean>
+
+    <bean id="corp1" class="org.example.Corp">
+        <property name="corpName" value="西华师范大学"/>
+        <property name="staff">
+            <list>
+                <ref bean="e1"/>
+                <ref bean="e2"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="corp2" class="org.example.Corp">
+        <constructor-arg value="CCCCCCCC"/>
+        <constructor-arg>
+            <list>
+                <ref bean="e1"/>
+                <ref bean="e2"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="corpAdvice" class="org.example.CorpAdvice"/>
+    <aop:config>
+        <aop:pointcut id="addWorkerPointcut" expression="execution(* org.example.Corp.addWorker*(..))"/>
+        <aop:aspect ref="corpAdvice">
+            <aop:around pointcut-ref="addWorkerPointcut" method="aroundAddWorker"/>
+            <aop:before pointcut-ref="addWorkerPointcut" method="beforeAddWorker"/>
+        </aop:aspect>
+
+    </aop:config>
+</beans>

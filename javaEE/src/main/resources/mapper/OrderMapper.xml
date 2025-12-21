@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.javaee.mapper.OrderMapper">
+    <resultMap id="OrderResultMap" type="org.example.javaee.entity.Order">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="product_id" property="productId"/>
+        <result column="count" property="count"/>
+        <result column="total_price" property="totalPrice"/>
+        <result column="update_time" property="orderTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="OrderResultMap">
+        SELECT * FROM `order` WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户ID查询订单 -->
+    <select id="selectByUserId" resultMap="OrderResultMap">
+        SELECT * FROM `order` WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectAll" resultMap="OrderResultMap">
+        SELECT * FROM `order`
+    </select>
+    <select id="findByUserIdAndProductId" resultMap="OrderResultMap">
+        SELECT * FROM `order` WHERE user_id = #{id} AND product_id = #{productId}
+    </select>
+    <select id="getOrdersLiastByUserId" resultType="org.example.javaee.entity.OrderList">
+        SELECT o.count as nums, p.name as  productName, p.img as productImage, o.total_price  as Price, o.update_time as 'date' FROM `order` o, product p WHERE user_id = #{id} AND o.product_id = p.id
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `order` (user_id, product_id, count, total_price,update_time)
+        VALUES (#{userId}, #{productId}, #{count}, #{totalPrice},#{orderTime})
+    </insert>
+
+    <update id="update">
+        UPDATE `order`
+        <set>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="count != null">count = #{count},</if>
+            <if test="totalPrice != null">total_price = #{totalPrice},</if>
+            <if test="orderTime != null">update_time = #{orderTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM `order` WHERE id = #{id}
+    </delete>
+</mapper>

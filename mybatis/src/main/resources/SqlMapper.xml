@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.Mappers.SqlMapper">
+    <resultMap id="bookMap" type="org.example.pojo.Book">
+        <id property="id" column="id" />
+        <result property="name" column="bk_name" />
+        <result property="author" column="bk_author" />
+        <result property="press" column="press" />
+        <result property="amount" column="amount" />
+    </resultMap>
+    <select id="find" parameterType="org.example.pojo.Book" resultMap="bookMap">
+        select * from bookstore
+         <where>
+        <if test="id != null and id !=0">
+            AND id = #{id}
+        </if>
+        <if test="name != null and name != ''">
+            AND bk_name = #{name}
+        </if>
+        <if test="author != null and author != ''">
+            AND bk_author = #{author}
+        </if>
+        <if test="press != null and press != ''">
+            AND press = #{press}
+        </if>
+         </where>
+    </select>
+    <select id="findByPress" resultMap="bookMap" parameterType="java.util.List">
+        SELECT * FROM bookstore
+            <where>
+                <foreach item="press" collection="list" index="index" separator=" OR " open="" close="">
+                    press LIKE CONCAT('%', #{press}, '%')
+                </foreach>
+            </where>
+
+    </select>
+
+
+</mapper>

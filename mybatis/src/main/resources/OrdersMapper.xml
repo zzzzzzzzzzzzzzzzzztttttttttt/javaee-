@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.Mappers.OrdersMapper">
+    <resultMap id="ordersMap" type="org.example.pojo.Orders">
+        <id property="id" column="id" />
+        <result property="customerId" column="c_id" />
+        <result property="number" column="nums"/>
+        <association property="book" column="b_id" javaType="org.example.pojo.Book"
+                     select="org.example.Mappers.MyMapper.find"/>
+    </resultMap>
+    <select id="findOrdersByUserId" resultMap="ordersMap" parameterType="integer">
+        SELECT * FROM orders WHERE c_id=#{userId}
+    </select>
+</mapper>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品列表 - 数字商城</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 保留你所有原有样式，新增加载状态相关样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        .header {
+            background-color: #ff6700;
+            color: white;
+            padding: 12px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-bar {
+            background-color: white;
+            padding: 15px 0;
+            margin: 20px auto;
+            max-width: 1200px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .category-inner {
+            padding: 0 20px;
+        }
+
+        .category-link {
+            display: inline-block;
+            margin-right: 20px;
+            text-decoration: none;
+            color: #555;
+            font-size: 15px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .category-link:hover {
+            color: #ff6700;
+            background-color: #fff5f0;
+        }
+
+        .category-link.active {
+            background-color: #ff6700;
+            color: white;
+        }
+
+        .goods-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 25px;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+        }
+
+        .goods-item {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            padding: 0;
+            width: 100%;
+        }
+
+        .goods-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .goods-img-wrapper {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            background-color: #f5f5f5;
+        }
+
+        .goods-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .goods-item:hover .goods-img {
+            transform: scale(1.05);
+        }
+
+        .goods-info {
+            padding: 15px;
+        }
+
+        .goods-name {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+        }
+
+        .goods-price {
+            color: #ff6700;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .goods-stock {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .goods-stock.low {
+            color: #ff6700;
+        }
+
+        .goods-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .goods-detail {
+            flex: 1;
+            text-decoration: none;
+            text-align: center;
+            padding: 8px 0;
+            background-color: #f5f5f5;
+            color: #555;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .goods-detail:hover {
+            background-color: #eee;
+            color: #333;
+        }
+
+        .add-cart-btn {
+            width: 100%;
+            border: none;
+            background-color: #ff6700;
+            color: white;
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 5px;
+            position: relative;
+        }
+
+        .add-cart-btn:hover {
+            background-color: #e65c00;
+        }
+
+        .add-cart-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 新增：加载状态样式 */
+        .add-cart-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .add-cart-btn .loading-icon {
+            display: none;
+            animation: spin 1s linear infinite;
+        }
+        .add-cart-btn.loading .cart-text {
+            display: none;
+        }
+        .add-cart-btn.loading .loading-icon {
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 新增：提示框样式 */
+        .cart-tip {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 4px;
+            color: white;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(-20px);
+        }
+        .cart-tip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .cart-tip.success {
+            background-color: #52c41a;
+        }
+        .cart-tip.error {
+            background-color: #f5222d;
+        }
+
+        .empty-tip {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 18px;
+        }
+
+        .empty-tip i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .debug-section {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .debug-section h4 {
+            color: #ff6700;
+            margin-bottom: 10px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .debug-content {
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 13px;
+            color: #333;
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .goods-id-debug {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .goods-container {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 15px;
+            }
+
+            .goods-img-wrapper {
+                height: 140px;
+            }
+
+            .category-link {
+                margin-right: 12px;
+                padding: 4px 8px;
+                font-size: 14px;
+            }
+
+            .header-container {
+                padding: 0 10px;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .debug-section {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .add-cart-btn {
+                padding: 8px 0;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部导航栏 -->
+<header class="header">
+    <div class="header-container">
+        <a href="/" class="logo">
+            <i class="fa-solid fa-store"></i> 数字商城
+        </a>
+    </div>
+</header>
+
+<!-- 分类导航 -->
+<div class="category-bar">
+    <div class="category-inner">
+        <a th:href="@{/goods/category/0}" class="category-link" th:classappend="${currentCategoryId == 0 ? 'active' : ''}">
+            <i class="fa-solid fa-th"></i> 全部商品
+        </a>
+        <a th:each="category : ${session.categoryList}"
+           th:href="@{/goods/category/{id}(id=${category.categoryId})}"
+           th:text="${category.categoryName}"
+           th:classappend="${currentCategoryId == category.categoryId ? 'active' : ''}"
+           class="category-link">
+        </a>
+    </div>
+</div>
+
+<!-- 商品列表 -->
+<div th:if="${session.goodsList != null and not session.goodsList.isEmpty()}" class="goods-container">
+    <div th:each="goods : ${session.goodsList}" class="goods-item">
+        <!-- 商品图片 -->
+        <div class="goods-img-wrapper">
+            <img th:src="${goods.goodsImg}" th:alt="${goods.goodsName}" class="goods-img"
+                 src="/images/default-goods.jpg">
+        </div>
+
+        <!-- 商品信息 -->
+        <div class="goods-info">
+            <div class="goods-id-debug">
+                商品ID：[[${goods.goodsId}]]
+            </div>
+
+            <h3 class="goods-name" th:text="${goods.goodsName}">默认商品名称</h3>
+            <p class="goods-price">¥<span th:text="${goods.price}">0.00</span></p>
+            <p class="goods-stock" th:classappend="${goods.stock < 10 ? 'low' : ''}">
+                <i class="fa-solid fa-box"></i>
+                库存：<span th:text="${goods.stock}">0</span>件
+                <span th:if="${goods.stock < 10}">（库存紧张）</span>
+            </p>
+
+            <!-- 修改：给按钮添加商品ID属性，拆分文本和加载图标 -->
+            <button class="add-cart-btn" th:data-goods-id="${goods.goodsId}">
+                <i class="fa-solid fa-cart-plus"></i>
+                <span class="cart-text">加入购物车</span>
+                <i class="fa-solid fa-spinner loading-icon"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 空数据提示 -->
+<div th:if="${session.goodsList == null or session.goodsList.isEmpty()}" class="empty-tip">
+    <i class="fa-solid fa-box-open"></i>
+    <p>暂无相关商品</p>
+    <p style="margin-top: 10px; font-size: 14px;">换个分类看看吧～</p>
+</div>
+
+<!-- 调试区域 -->
+<div class="debug-section">
+    <h4>
+        <i class="fa-solid fa-bug"></i> 调试 - 商品列表原始数据
+    </h4>
+    <div class="debug-content">
+        [[${session.goodsList != null ? session.goodsList : '商品列表为空'}]]
+    </div>
+</div>
+
+<!-- 新增：全局提示框 -->
+<div class="cart-tip" id="cartTip"></div>
+
+<!-- 新增：核心交互逻辑 -->
+<script>
+    // 获取提示框元素
+    const cartTip = document.getElementById('cartTip');
+
+    // 给所有加入购物车按钮绑定点击事件
+    document.querySelectorAll('.add-cart-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            // 1. 获取当前商品ID
+            const goodsId = this.getAttribute('data-goods-id');
+            // 2. 禁用按钮，显示加载状态
+            this.disabled = true;
+            this.classList.add('loading');
+
+            try {
+                // 3. 向后端发送添加购物车请求
+                const response = await fetch('/cart/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 如果需要登录验证，添加token（根据你的后端需求调整）
+                        // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        userId: 1,
+                        goodsId: goodsId,  // 商品ID
+                        quantity: 1        // 购买数量，默认1件
+                    })
+                });
+
+                // 4. 处理响应结果
+                const result = await response.json();
+                if (response.ok) {
+                    // 请求成功
+                    showTip('加入购物车成功！', 'success');
+                } else {
+                    // 后端返回业务错误（如库存不足、商品不存在）
+                    showTip(result.message || '加入购物车失败', 'error');
+                }
+            } catch (error) {
+                // 网络错误或其他异常
+                showTip('网络异常，请稍后重试', 'error');
+                console.error('添加购物车失败：', error);
+            } finally {
+                // 5. 恢复按钮状态（延迟1.5秒，让用户看到加载状态）
+                setTimeout(() => {
+                    this.disabled = false;
+                    this.classList.remove('loading');
+                }, 1500);
+            }
+        });
+    });
+
+    // 提示框显示函数
+    function showTip(message, type) {
+        cartTip.textContent = message;
+        cartTip.className = `cart-tip ${type} show`;
+
+        // 3秒后隐藏提示框
+        setTimeout(() => {
+            cartTip.classList.remove('show');
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
