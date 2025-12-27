@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.mapper.OrdersMapper">
+    <resultMap id="OrdersResultMap" type="org.example.pojo.Orders">
+        <id column="id" property="id"/>
+        <result column="c_id" property="customerId"/>
+        <result column="b_id" property="bookId"/>
+        <result column="nums" property="nums"/>
+        <result column="last_time" property="orderTime"/>
+    </resultMap>
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+        <!-- SQL 语句不变 -->
+        <selectKey keyProperty="id" resultType="int" order="BEFORE" >
+            select if(max(id) is null,1,max(id)+1) as newId from orders
+        </selectKey>
+        INSERT INTO `orders` (id,c_id, b_id, nums, last_time)
+        VALUES (#{id},#{customerId},#{bookId},#{nums},#{nowTime})
+    </insert>
+    <update id="update">
+        <!-- SQL 语句不变 -->
+        UPDATE `orders`
+        <set>
+            <if test="customerId != null">
+                c_id = #{customerId},
+            </if>
+            <if test="bookId != null">
+                b_id = #{bookId},
+            </if>
+            <if test="nums != null">
+                nums = #{nums},
+            </if>
+            <if test="nowTime != null">
+                last_time = #{nowTime},
+            </if>
+        </set>
+        WHERE c_id = #{customerId} AND b_id = #{bookId}
+    </update>
+    <select id="findCustomerBybook" resultType="org.example.pojo.Orders">
+      SELECT * FROM orders WHERE b_id = #{id}
+    </select>
+    <select id="findById"  resultMap="OrdersResultMap">
+        SELECT * FROM orders WHERE  b_id= #{bookId} and c_id=#{customerId}
+    </select>
+</mapper>

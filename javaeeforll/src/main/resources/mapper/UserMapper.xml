@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须与Mapper接口全类名一致 -->
+<mapper namespace="org.example.javaeeforll.mapper.UserMapper">
+
+    <!-- 定义字段映射规则：id为映射唯一标识，type为实体类全类名 -->
+    <resultMap id="UserResultMap" type="org.example.javaeeforll.entity.User">
+        <!-- 主键映射（非主键用result） -->
+        <id column="user_id" property="userId"/>
+        <!-- 基础字段映射：column=数据库字段名，property=实体类属性名 -->
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <!-- 示例：如果有其他字段（如下划线命名），补充映射 -->
+        <result column="real_name" property="realName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 复用上面的映射规则，编写登录查询SQL -->
+    <select id="login" resultMap="UserResultMap">
+        select * from t_user where username=#{username} and password=#{password}
+    </select>
+
+</mapper>

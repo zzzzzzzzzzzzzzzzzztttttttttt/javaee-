@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须与Mapper接口的全类名一致（请根据实际包路径修改） -->
+<mapper namespace="org.example.javaeeforll.mapper.CartMapper">
+
+    <!-- 定义Cart实体的字段映射规则：复用性强 -->
+    <resultMap id="CartResultMap" type="org.example.javaeeforll.entity.Cart">
+        <!-- 主键映射：column=数据库字段名，property=实体类属性名 -->
+        <id column="cart_id" property="cartId"/>
+        <!-- 普通字段映射 -->
+        <result column="user_id" property="userId"/>
+        <result column="goods_id" property="goodsId"/>
+        <result column="num" property="num"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <resultMap id="CartResultMapDto" type="org.example.javaeeforll.entity.CartDTO">
+        <!-- 主键映射：column=数据库字段名，property=实体类属性名 -->
+        <id column="cart_id" property="cartId"/>
+        <!-- 普通字段映射 -->
+        <result column="user_id" property="userId"/>
+        <result column="goods_id" property="goodsId"/>
+        <result column="num" property="num"/>
+        <result column="goods_name" property="goodsName"/>
+        <result column="price" property="price"/>
+        <result column="goods_img" property="goodsImg"/>
+    </resultMap>
+
+    <!-- 1. 新增购物车 -->
+    <insert id="addCart" parameterType="org.example.javaeeforll.entity.Cart">
+        INSERT INTO t_cart (user_id, goods_id, num, create_time)
+        VALUES (#{userId}, #{goodsId}, #{num}, #{createTime})
+    </insert>
+
+    <!-- 2. 根据购物车ID删除 -->
+    <delete id="deleteCartById" parameterType="java.lang.Integer">
+        DELETE FROM t_cart WHERE cart_id = #{cartId}
+    </delete>
+
+    <!-- 3. 根据用户ID删除购物车 -->
+    <delete id="deleteCartByUserId" parameterType="java.lang.Integer">
+        DELETE FROM t_cart WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 4. 修改购物车商品数量 -->
+    <update id="updateCartNum" parameterType="org.example.javaeeforll.entity.Cart">
+        UPDATE t_cart
+        SET num = #{num}
+        WHERE cart_id = #{cartId}
+    </update>
+
+    <!-- 5. 根据购物车ID查询 -->
+    <select id="selectCartById" parameterType="java.lang.Integer" resultMap="CartResultMap">
+        SELECT cart_id, user_id, goods_id, num, create_time
+        FROM t_cart
+        WHERE cart_id = #{cartId}
+    </select>
+
+    <!-- 6. 根据用户ID查询购物车列表 -->
+    <select id="selectCartByUserId" parameterType="java.lang.Integer" resultMap="CartResultMapDto">
+        <!-- 关键修改：给重复字段goods_id指定表名前缀t_cart，其他字段按需指定 -->
+        SELECT
+        t_cart.cart_id,
+        t_cart.user_id,
+        t_cart.goods_id,  <!-- 明确指定购物车表的goods_id，解决字段歧义 -->
+        t_cart.num,
+        t_goods.goods_name,  <!-- 明确指定商品表的字段（可选，但推荐） -->
+        t_goods.price,
+        t_goods.goods_img
+        FROM t_cart, t_goods
+        WHERE t_cart.user_id = #{userId}  <!-- 给user_id也指定表名，避免潜在歧义 -->
+        AND t_cart.goods_id = t_goods.goods_id
+    </select>
+
+    <!-- 7. 查询所有购物车数据 -->
+    <select id="selectAllCart" resultMap="CartResultMap">
+        SELECT cart_id, user_id, goods_id, num, create_time
+        FROM t_cart
+    </select>
+
+</mapper>

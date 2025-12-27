@@ -2,53 +2,324 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的购物车</title>
     <style>
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        .btn-update { padding: 5px 10px; background: #4CAF50; color: white; border: none; }
-        .btn-delete { padding: 5px 10px; background: #f44336; color: white; border: none; }
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+
+        /* 页面容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 标题样式 */
+        .cart-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+
+        /* 购物车为空提示 */
+        .empty-cart {
+            text-align: center;
+            padding: 80px 0;
+            color: #999;
+            font-size: 16px;
+        }
+
+        .empty-cart a {
+            color: #409eff;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        /* 购物车表格样式 */
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* 表头样式 */
+        .cart-table thead {
+            background: #f8f9fa;
+        }
+
+        .cart-table th {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-weight: normal;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* 表体样式 */
+        .cart-table td {
+            padding: 20px 15px;
+            text-align: center;
+            border-bottom: 1px solid #f5f5f5;
+            vertical-align: middle;
+        }
+
+        /* 商品图片样式 */
+        .goods-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .goods-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+        }
+
+        .goods-name {
+            color: #333;
+            font-size: 14px;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 价格样式 */
+        .price {
+            color: #e64340;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* 数量操作按钮 */
+        .num-control {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        .num-btn {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            background: #f8f9fa;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .num-btn:hover {
+            background: #e6e6e6;
+        }
+
+        .num-btn:disabled {
+            background: #fafafa;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .num-input {
+            width: 50px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        /* 操作按钮样式 */
+        .btn-delete {
+            padding: 6px 12px;
+            background: #fff;
+            color: #e64340;
+            border: 1px solid #e64340;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #e64340;
+            color: #fff;
+        }
+
+        /* 合计区域样式 */
+        .cart-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .total-info {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .total-price {
+            color: #e64340;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .btn-checkout {
+            padding: 10px 30px;
+            background: #e64340;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-checkout:hover {
+            background: #d43835;
+        }
+
+        .btn-checkout:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
-<h2>我的购物车</h2>
-<table>
-    <tr>
-        <th>商品名称</th>
-        <th>单价</th>
-        <th>数量</th>
-        <th>操作</th>
-    </tr>
-    <tr th:each="cart : ${cartList}">
-        <td th:text="${goodsService.getGoodsById(cart.goodsId).goodsName}"></td>
-        <td th:text="${goodsService.getGoodsById(cart.goodsId).price}"></td>
-        <td>
-            <button onclick="updateNum(${cart.cartId}, -1)">-</button>
-            <span th:text="${cart.num}"></span>
-            <button onclick="updateNum(${cart.cartId}, 1)">+</button>
-        </td>
-        <td>
-            <button class="btn-delete" onclick="deleteCart(${cart.cartId})">删除</button>
-        </td>
-    </tr>
-</table>
+<div class="container">
+    <h2 class="cart-title">我的购物车</h2>
+    <div class="empty-cart" th:if="${#lists.isEmpty(cartList)}">
+        您的购物车空空如也~ <a href="/front/goods">继续购物</a>
+    </div>
+
+    <!-- 购物车有数据时显示 -->
+    <div th:unless="${#lists.isEmpty(cartList)}">
+        <table class="cart-table">
+            <thead>
+            <tr>
+                <th width="40%">商品信息</th>
+                <th width="20%">单价</th>
+                <th width="20%">数量</th>
+                <th width="20%">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cart : ${cartList}">
+                <!-- 商品信息（图片+名称） -->
+                <td>
+                    <div class="goods-info">
+                        <img th:src="${cart.goodsImg}" alt="商品图片" class="goods-img">
+                        <span class="goods-name" th:text="${cart.goodsName}"></span>
+                    </div>
+                </td>
+                <!-- 单价 -->
+                <td class="price" th:text="${cart.price}"></td>
+                <!-- 数量控制 -->
+                <td>
+                    <div class="num-control">
+                        <button class="num-btn" onclick="updateNum(${cart.cartId}, -1)"
+                                th:disabled="${cart.num <= 1}">-</button>
+                        <input type="text" class="num-input" th:value="${cart.num}" readonly>
+                        <button class="num-btn" onclick="updateNum(${cart.cartId}, 1)">+</button>
+                    </div>
+                </td>
+                <!-- 操作 -->
+                <td>
+                    <button class="btn-delete" onclick="deleteCart(${cart.cartId})">删除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- 合计区域 -->
+        <div class="cart-footer">
+            <div class="total-info">
+                合计：<span class="total-price" id="totalPrice">¥0.00</span>
+            </div>
+            <button class="btn-checkout" onclick="checkout()">去结算</button>
+        </div>
+    </div>
+</div>
 
 <script>
     // 更新数量
     function updateNum(cartId, step) {
         fetch(`/cart/update?cartId=${cartId}&num=${step}`, { method: 'PUT' })
             .then(res => res.text())
-            .then(data => data === 'success' && window.location.reload());
+            .then(data => {
+                if (data === 'success') {
+                    window.location.reload();
+                } else {
+                    alert('修改数量失败，请重试！');
+                }
+            })
+            .catch(err => {
+                console.error('更新数量失败：', err);
+                alert('网络异常，请重试！');
+            });
     }
 
     // 删除商品
     function deleteCart(cartId) {
-        if (confirm('确定删除吗？')) {
+        if (confirm('确定删除该商品吗？')) {
             fetch(`/cart/delete/${cartId}`, { method: 'DELETE' })
                 .then(res => res.text())
-                .then(data => data === 'success' && window.location.reload());
+                .then(data => {
+                    if (data === 'success') {
+                        window.location.reload();
+                    } else {
+                        alert('删除失败，请重试！');
+                    }
+                })
+                .catch(err => {
+                    console.error('删除商品失败：', err);
+                    alert('网络异常，请重试！');
+                });
         }
     }
+    // 结算（示例）
+    // 结算（跳转到订单提交页面）
+    function checkout() {
+        fetch(`/front/checkout`, { method: 'GET' }).then(
+            window.location.href = '/front/checkout'
+        )
+    }
+
+    // 计算总价（前端动态计算）
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartItems = document.querySelectorAll('.cart-table tbody tr');
+        let total = 0;
+
+        cartItems.forEach(item => {
+            // 获取单价和数量
+            const price = parseFloat(item.querySelector('.price').textContent);
+            const num = parseInt(item.querySelector('.num-input').value);
+            total += price * num;
+        });
+
+        // 格式化总价并显示
+        document.getElementById('totalPrice').textContent = '¥' + total.toFixed(2);
+    });
 </script>
 </body>
 </html>

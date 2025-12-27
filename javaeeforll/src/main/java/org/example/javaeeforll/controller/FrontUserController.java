@@ -45,12 +45,19 @@ public class FrontUserController {
     @GetMapping("/toLogin")
     public String toLogin() {
         return "front/login";
+    }@GetMapping("/logout")
+    public String toLogout() {
+        return "front/login";
     }
 
     // 用户登录
     @PostMapping("/login")
     public String login(String username, String password, Model model, HttpSession session) {
+        System.out.println("用户名：" + username);
+        System.out.println("密码：" + password);
+
         User user = userService.login(username, password);
+        System.out.println(user);
         if (user != null) {
             session.setAttribute("user", user);
             return "redirect:/";

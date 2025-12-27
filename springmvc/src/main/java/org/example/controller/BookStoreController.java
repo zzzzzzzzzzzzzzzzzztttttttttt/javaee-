@@ -1,7 +1,6 @@
 package org.example.controller;
 
 import org.example.pojo.Bookstore;
-import org.example.pojo.Orders;
 import org.example.pojo.buy;
 import org.example.service.BookstoreService;
 import org.example.service.BuyService;
@@ -12,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.awt.print.Book;
 import java.util.List;
 
 @Controller
@@ -27,14 +25,14 @@ public class BookStoreController {
     private BuyService buyService;
     @RequestMapping("/")
     public String toLogin() {
-        return "login";
+        return "/login.jsp";
     }
     @RequestMapping("/bookStore")
     public String toBookStore(@RequestParam("customerId") Integer customerId, Model model) {
         List<Bookstore> books = bookstoreService.findAllBooks();
         model.addAttribute("books", books);
         model.addAttribute("customerId", customerId);
-        return "bookStore";
+        return "/bookStore.jsp";
     }
 
     // 添加到购物车并结算
@@ -55,6 +53,6 @@ public class BookStoreController {
         List<buy> orders = buyService.findById(customerId);
         model.addAttribute("orders", orders);
         model.addAttribute("customerId", customerId);
-        return "purchaseRecord";
+        return "/purchaseRecord.jsp";
     }
 }

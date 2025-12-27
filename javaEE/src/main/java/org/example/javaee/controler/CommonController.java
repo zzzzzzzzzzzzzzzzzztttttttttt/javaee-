@@ -23,6 +23,9 @@ public class CommonController {
         String username =user.getUsername();
         String password=user.getPassword();
         User u1=userService.getUserByUsername(username);
+        if (u1==null){
+            return Result.error("500","用户不存在");
+        }
         if(u1.getUsername().equals(username)&&u1.getPassword().equals(password)){
             return Result.success();
         }

@@ -12,7 +12,7 @@ public interface UserMapper {
     int register(User user);
 
     // 用户登录
-    @Select("select * from t_user where username=#{username} and password=#{password}")
+
     User login(String username, String password);
 
     // 根据ID查询用户

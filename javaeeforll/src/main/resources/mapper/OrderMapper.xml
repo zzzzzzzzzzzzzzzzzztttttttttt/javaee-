@@ -1,13 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.javaeeforll.entity.Order">
-    <insert id="insertOrder">
-        insert into t_order(order_id,user_id,total_price,receiver,phone,address,order_status,create_time)
-        values(#{orderId},#{userId},#{totalPrice},#{receiver},#{phone},#{address},#{orderStatus},#{createTime})
-    </insert>
+<mapper namespace="org.example.javaeeforll.mapper.OrderMapper">
+    <resultMap id="BaseResultMap" type="org.example.javaeeforll.entity.Order">
+        <id column="order_id" jdbcType="VARCHAR" property="orderId" />
+        <id column="user_id" jdbcType="INTEGER" property="userId" />
+        <id column="total_price" jdbcType="DECIMAL" property="totalPrice" />
+        <id column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <id column="num" jdbcType="INTEGER" property="num" />
+        <id column="goods_id" jdbcType="INTEGER" property="goodsId" />
+    </resultMap>
+<!--    public class OrderSubmitDTO {-->
+<!--    private String totalAmount; // 订单总金额-->
+<!--    private String orderImg;-->
+<!--    private String orderName;-->
+<!--    private Date date;-->
 
-    <select id="selectByUserId" resultType="org.example.javaeeforll.entity.Order">
-        select * from t_order where user_id=#{userId} order by create_time desc
+<!--    }-->
+    <resultMap id="BaseResultMapdto" type="org.example.javaeeforll.entity.OrderSubmitDTO">
+        <id column="num" jdbcType="INTEGER" property="nums" />
+        <id column="total_price" jdbcType="VARCHAR" property="totalAmount" />
+        <id column="goods_img" jdbcType="VARCHAR" property="orderImg" />
+        <id column="goods_name" jdbcType="VARCHAR" property="orderName" />
+        <id column="create_time" jdbcType="TIMESTAMP" property="date" />
+    </resultMap>
+    <insert id="insertOrder">
+        insert into t_order(user_id,total_price,create_time, num, goods_id)
+        values(#{userId},#{totalPrice},#{createTime},#{num}, #{goodsId})
+
+    </insert>
+    <update id="updateOrder">
+        update t_order set order_id=#{orderId},user_id=#{userId},total_price=#{totalPrice},create_time=#{createTime}, num=#{num}, goods_id=#{goodsId}
+        where order_id=#{orderId}
+    </update>
+
+    <select id="selectByUserId" resultMap="BaseResultMapdto">
+        select
+           t_order.num,
+            t_order.total_price,
+            t_order.create_time,
+            t_goods.goods_name,
+            t_goods.goods_img
+        from t_order,t_goods
+                 where t_order.user_id=#{userId} and t_goods.goods_id=t_order.goods_id
     </select>
 
     <select id="selectByOrderId" resultType="org.example.javaeeforll.entity.Order">
@@ -16,5 +50,8 @@
 
     <select id="selectAll" resultType="org.example.javaeeforll.entity.Order">
         select * from t_order order by create_time desc
+    </select>
+    <select id="selectByUserIdAndGoodsId" resultMap="BaseResultMap">
+        select * from t_order where user_id=#{userId} and goods_id=#{goodsId}
     </select>
 </mapper>

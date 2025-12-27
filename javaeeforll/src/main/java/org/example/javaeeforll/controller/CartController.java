@@ -2,14 +2,19 @@ package org.example.javaeeforll.controller;
 
 
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 import org.example.javaeeforll.entity.Cart;
 import org.example.javaeeforll.entity.CartAddRequest;
+import org.example.javaeeforll.entity.CartDTO;
+import org.example.javaeeforll.entity.User;
 import org.example.javaeeforll.service.CartService;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/cart")
@@ -19,21 +24,37 @@ public class CartController {
     private CartService cartService;
 
     // 加入购物车
+// SpringBoot示例
     @PostMapping("/add")
-// 注意：如果返回的是字符串，建议添加@ResponseBody（如果类上有@RestController则无需）
-    public String addCart(@RequestBody CartAddRequest request) {
-        Cart cart = new Cart();
-        cart.setUserId(request.getUserId());
-        cart.setGoodsId(request.getGoodsId());
-        cart.setNum(request.getNum()); // 前端不传num时，使用默认值1
-        cart.setCreateTime(new Date());
-        System.out.println(cart);
-        int result = cartService.addCart(cart);
-        return result > 0 ? "success" : "fail";
+    @ResponseBody
+    public Map<String, Object> addCart(@RequestBody CartDTO cartDTO ,HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            User user = (User) session.getAttribute("user");
+            System.out.println("接收到的数据：" + cartDTO);
+            Cart c=new Cart();
+            c.setUserId(user.getUserId());
+            c.setGoodsId(cartDTO.getGoodsId());
+            c.setNum(cartDTO.getNum());
+            c.setCreateTime(new Date());
+            // 业务逻辑：检查库存、添加购物车
+            System.out.println("添加购物车：" + c);
+            cartService.addCart(c);
+            result.put("success", true);
+            result.put("msg", "加入购物车成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("msg", "加入失败：" + e.getMessage());
+            e.printStackTrace();
+        }
+        return result; // 始终返回JSON对象
     }
+
+    // 对应的DTO类
+
     // 查询购物车
     @GetMapping("/list/{userId}")
-    public List<Cart> getCartList(@PathVariable Integer userId) {
+    public List<CartDTO> getCartList(@PathVariable Integer userId) {
         return cartService.getCartByUserId(userId);
     }
 

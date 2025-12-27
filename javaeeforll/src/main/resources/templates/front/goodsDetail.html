@@ -40,14 +40,70 @@
         let num = parseInt(input.value) + step;
         input.value = Math.max(1, Math.min(num, parseInt(input.max)));
     }
-
     function addCart(goodsId) {
-        const userId = 1; // 实际从登录会话获取
-        const num = document.getElementById('num').value;
-        fetch(`/cart/add?userId=${userId}&goodsId=${goodsId}&num=${num}`, {
-            method: 'POST'
-        }).then(res => res.text())
-            .then(data => alert(data === 'success' ? '加入购物车成功' : '加入失败'));
+        console.log('addCart', goodsId);
+
+        // 1. 获取参数并校验
+        const numInput = document.getElementById('num');
+        const num = numInput ? numInput.value : 1; // 兼容num元素不存在的情况
+        // 从sessionStorage/登录信息中获取userId（替换写死的1）
+        const userId = sessionStorage.getItem('userId') || document.getElementById('userId')?.value || 1;
+
+        // 校验数量
+        if (!/^[1-9]\d*$/.test(num)) {
+            alert('请输入有效的购买数量（正整数）');
+            numInput.focus();
+            return;
+        }
+
+        // 2. 构造请求参数（POST请求推荐用body传参）
+        const params = {
+            userId: userId,
+            goodsId: goodsId,
+            num: parseInt(num)
+        };
+
+        // 3. 发送请求（优化版）
+        fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // 声明JSON格式
+                'X-Requested-With': 'XMLHttpRequest' // 标识AJAX请求
+            },
+            body: JSON.stringify(params) // POST参数放在body中
+        })
+            // 4. 统一处理响应（兼容文本/JSON）
+            .then(async (res) => {
+                if (!res.ok) {
+                    throw new Error(`HTTP错误，状态码：${res.status}`);
+                }
+                // 先尝试按文本解析，再兼容JSON
+                const text = await res.text();
+                try {
+                    // 如果是JSON格式，解析成对象
+                    return JSON.parse(text);
+                } catch (e) {
+                    // 纯文本直接返回
+                    return text;
+                }
+            })
+            // 5. 处理业务逻辑
+            .then((data) => {
+                // 兼容后端返回纯字符串（success/fail）或JSON对象
+                const isSuccess = data === 'success' || (typeof data === 'object' && data.success);
+                const msg = isSuccess
+                    ? '加入购物车成功🎉'
+                    : (data.msg || data || '加入购物车失败😥');
+                alert(msg);
+
+                // 可选：添加成功后刷新购物车数量
+                // updateCartCount();
+            })
+            // 6. 捕获所有异常（网络/解析/业务）
+            .catch((err) => {
+                console.error('添加购物车异常：', err);
+                alert(`添加购物车失败：${err.message}`);
+            });
     }
 </script>
 </body>

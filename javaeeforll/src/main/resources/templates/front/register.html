@@ -2,18 +2,186 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户注册</title>
     <style>
-        .container { width: 300px; margin: 100px auto; }
-        .form-group { margin: 15px 0; }
-        input { width: 100%; padding: 8px; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
-        .error { color: red; }
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        /* 页面背景 */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* 容器样式 */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 40px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 标题样式 */
+        .container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+            position: relative;
+        }
+
+        .container h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            margin: 10px auto 0;
+            border-radius: 3px;
+        }
+
+        /* 表单组样式 */
+        .form-group {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        /* 输入框样式 */
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        /* 错误提示样式 */
+        .error {
+            color: #e74c3c;
+            font-size: 13px;
+            text-align: center;
+            margin: 10px 0;
+            min-height: 16px;
+        }
+
+        /* 按钮样式 */
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* 登录链接样式 */
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .container h2 {
+                font-size: 20px;
+            }
+
+            input {
+                padding: 10px 12px;
+            }
+
+            button {
+                padding: 10px;
+                font-size: 15px;
+            }
+        }
+
+        /* 输入框动画效果 */
+        .form-group {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>注册</h2>
+    <h2>用户注册</h2>
     <form action="/user/register" method="post">
         <div class="form-group">
             <input type="text" name="username" placeholder="用户名" required>
@@ -30,7 +198,7 @@
         <div class="error" th:text="${msg}"></div>
         <button type="submit">注册</button>
     </form>
-    <p style="margin-top: 10px;">已有账号？<a href="/user/toLogin">登录</a></p>
+    <p class="login-link">已有账号？<a href="/user/toLogin">登录</a></p>
 </div>
 </body>
 </html>

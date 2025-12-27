@@ -390,11 +390,6 @@
 
             <h3 class="goods-name" th:text="${goods.goodsName}">默认商品名称</h3>
             <p class="goods-price">¥<span th:text="${goods.price}">0.00</span></p>
-            <p class="goods-stock" th:classappend="${goods.stock < 10 ? 'low' : ''}">
-                <i class="fa-solid fa-box"></i>
-                库存：<span th:text="${goods.stock}">0</span>件
-                <span th:if="${goods.stock < 10}">（库存紧张）</span>
-            </p>
 
             <!-- 修改：给按钮添加商品ID属性，拆分文本和加载图标 -->
             <button class="add-cart-btn" th:data-goods-id="${goods.goodsId}">
@@ -413,15 +408,7 @@
     <p style="margin-top: 10px; font-size: 14px;">换个分类看看吧～</p>
 </div>
 
-<!-- 调试区域 -->
-<div class="debug-section">
-    <h4>
-        <i class="fa-solid fa-bug"></i> 调试 - 商品列表原始数据
-    </h4>
-    <div class="debug-content">
-        [[${session.goodsList != null ? session.goodsList : '商品列表为空'}]]
-    </div>
-</div>
+
 
 <!-- 新增：全局提示框 -->
 <div class="cart-tip" id="cartTip"></div>
@@ -450,9 +437,9 @@
                         // 'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
-                        userId: 1,
+                        userId: sessionStorage.getItem('user'),
                         goodsId: goodsId,  // 商品ID
-                        quantity: 1        // 购买数量，默认1件
+                        num: 1        // 购买数量，默认1件
                     })
                 });
 
@@ -461,6 +448,8 @@
                 if (response.ok) {
                     // 请求成功
                     showTip('加入购物车成功！', 'success');
+                    console.log('加入购物车成功：', result);
+
                 } else {
                     // 后端返回业务错误（如库存不足、商品不存在）
                     showTip(result.message || '加入购物车失败', 'error');

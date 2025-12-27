@@ -13,7 +13,6 @@ public class SpringMvcConfig {
     public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver resolver = new InternalResourceViewResolver();
         resolver.setPrefix("/WEB-INF/"); // 页面所在目录
-        resolver.setSuffix(".jsp"); // 页面后缀
         return resolver;
     }
 }

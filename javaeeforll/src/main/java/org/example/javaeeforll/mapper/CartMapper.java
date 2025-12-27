@@ -3,17 +3,18 @@ package org.example.javaeeforll.mapper;
 
 import org.apache.ibatis.annotations.*;
 import org.example.javaeeforll.entity.Cart;
+import org.example.javaeeforll.entity.CartDTO;
 
 import java.util.List;
 @Mapper
 public interface CartMapper {
     // 加入购物车
-    @Insert("insert into t_cart(user_id,goods_id,num,create_time) values(#{userId},#{goodsId},#{num},#{createTime})")
+
     int addCart(Cart cart);
 
     // 查询用户购物车
-    @Select("select * from t_cart where user_id=#{userId}")
-    List<Cart> selectByUserId(Integer userId);
+
+    List<CartDTO> selectCartByUserId(Integer userId);
 
     // 修改购物车数量
     @Update("update t_cart set num=#{num} where cart_id=#{cartId}")
